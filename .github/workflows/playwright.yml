@@ -19,14 +19,11 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npx playwright install --with-deps chromium
-
+    
     - name: Run Playwright tests
       run: npx playwright test
       env:
         DOTENV_PRIVATE_KEY_CI: ${{ secrets.DOTENV_PRIVATE_KEY }}
-      # uses: docker://mcr.microsoft.com/playwright:v1.54.2-jammy
-      # with:
-      #   args: npx playwright test
     
     # - name: Download previous artifact
     #   uses: dawidd6/action-download-artifact@v6
@@ -53,13 +50,13 @@ jobs:
         server_address: smtp.gmail.com
         server_port: 465
         secure: true
-        username: ${{ env.ACTIONLOGEMENT_EMAIL }}
-        password: ${{ env.GMAIL_APP_PASSWORD }}
+        username: ${{ secrets.GMAIL_FOR_MARKDOWN }}
+        password: ${{ secrets.GMAIL_APP_PASSWORD }}
         subject: "Daily PassLogement Offers"
         body: "Please find the attached housing_offers.md file."
         from: GitHub Actions
-        to: ${{ env.ACTIONLOGEMENT_EMAIL }}
-        html_body: file://housing_offers.md
+        to: ${{ secrets.GMAIL_FOR_MARKDOWN }}
+        # html_body: file://housing_offers.md
         convert_markdown: true
 
     - name: Upload housing_offers.md artifact
