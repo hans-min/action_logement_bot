@@ -5,7 +5,7 @@ on:
   pull_request:
     branches: [ main, master ]
   schedule:
-    - cron: "0 16 * * *"
+    - cron: "0 11 * * *"
 
 jobs:
   test:
@@ -24,9 +24,6 @@ jobs:
       run: npx playwright test
       env:
         DOTENV_PRIVATE_KEY_CI: ${{ secrets.DOTENV_PRIVATE_KEY }}
-        # ACTIONLOGEMENT_PASSWORD: ${{ secrets.ACTIONLOGEMENT_PASSWORD }}
-        # TRAVELTIME_API_KEY: ${{ secrets.TRAVELTIME_API_KEY }}
-        # TRAVELTIME_APP_ID: ${{ secrets.TRAVELTIME_APP_ID }}
       # uses: docker://mcr.microsoft.com/playwright:v1.54.2-jammy
       # with:
       #   args: npx playwright test
@@ -50,7 +47,7 @@ jobs:
     #     fi
 
     - name: Send housing_offers.md via Email
-      if: ${{ steps.compare_md.outputs.paris == 'true' && !cancelled() }}
+      if: ${{ !cancelled() }}
       uses: dawidd6/action-send-mail@v5
       with:
         server_address: smtp.gmail.com
