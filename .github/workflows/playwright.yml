@@ -23,7 +23,7 @@ jobs:
     - name: Run Playwright tests
       run: npx playwright test
       env:
-        DOTENV_PRIVATE_KEY_CI: ${{ secrets.DOTENV_PRIVATE_KEY_CI }}
+        DOTENV_PRIVATE_KEY_CI: ${{ secrets.DOTENV_PRIVATE_KEY }}
         # ACTIONLOGEMENT_PASSWORD: ${{ secrets.ACTIONLOGEMENT_PASSWORD }}
         # TRAVELTIME_API_KEY: ${{ secrets.TRAVELTIME_API_KEY }}
         # TRAVELTIME_APP_ID: ${{ secrets.TRAVELTIME_APP_ID }}
@@ -56,12 +56,12 @@ jobs:
         server_address: smtp.gmail.com
         server_port: 465
         secure: true
-        username: ${{ secrets.ACTIONLOGEMENT_EMAIL }}
-        password: ${{ secrets.GMAIL_APP_PASSWORD }}
+        username: ${{ env.ACTIONLOGEMENT_EMAIL }}
+        password: ${{ env.GMAIL_APP_PASSWORD }}
         subject: "Daily PassLogement Offers"
         body: "Please find the attached housing_offers.md file."
         from: GitHub Actions
-        to: ${{ secrets.ACTIONLOGEMENT_EMAIL }}
+        to: ${{ env.ACTIONLOGEMENT_EMAIL }}
         html_body: file://housing_offers.md
         convert_markdown: true
 
