@@ -1,0 +1,20 @@
+{
+  "name": "action_logement_bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "@types/node": "^24.10.0",
+    "dotenv": "^17.2.3"
+  },
+  "dependencies": {
+    "@dotenvx/dotenvx": "^1.51.1",
+    "traveltime-api": "^7.1.1"
+  }
+}

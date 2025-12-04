@@ -1,0 +1,78 @@
+name: Playwright Tests
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  schedule:
+    - cron: "0 16 * * *"
+env:
+    ACTIONLOGEMENT_EMAIL: ${{ secrets.ACTIONLOGEMENT_EMAIL }}
+
+jobs:
+  test:
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+
+    - uses: actions/setup-node@v5
+      with:
+        node-version: lts/*
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps chromium
+
+    - name: Run Playwright tests
+      run: npx playwright test
+      env:
+          ACTIONLOGEMENT_PASSWORD: ${{ secrets.ACTIONLOGEMENT_PASSWORD }}
+          TRAVELTIME_API_KEY: ${{ secrets.TRAVELTIME_API_KEY }}
+          TRAVELTIME_APP_ID: ${{ secrets.TRAVELTIME_APP_ID }}
+      # uses: docker://mcr.microsoft.com/playwright:v1.54.2-jammy
+      # with:
+      #   args: npx playwright test
+    
+    # - name: Download previous artifact
+    #   uses: dawidd6/action-download-artifact@v6
+    #   with:
+    #     workflow: playwright.yml
+    #     name: housing_offers   # already unzipped
+    #     path: prev_artifact
+
+    # - name: Compare artifacts
+    #   id: compare_md
+    #   run: |
+    #     if grep -q "75" "housing_offers.md"; then
+    #       echo "paris=true" >> $GITHUB_OUTPUT
+    #       echo "File contains Paris offers"
+    #     else
+    #       echo "paris=false" >> $GITHUB_OUTPUT
+    #       echo "No Paris offers"
+    #     fi
+
+    - name: Send housing_offers.md via Email
+      if: ${{ steps.compare_md.outputs.paris == 'true' && !cancelled() }}
+      uses: dawidd6/action-send-mail@v5
+      with:
+        server_address: smtp.gmail.com
+        server_port: 465
+        secure: true
+        username: ${{ secrets.ACTIONLOGEMENT_EMAIL }}
+        password: ${{ secrets.GMAIL_APP_PASSWORD }}
+        subject: "Daily PassLogement Offers"
+        body: "Please find the attached housing_offers.md file."
+        from: GitHub Actions
+        to: ${{ secrets.ACTIONLOGEMENT_EMAIL }}
+        html_body: file://housing_offers.md
+        convert_markdown: true
+
+    - name: Upload housing_offers.md artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: housing_offers
+        path: housing_offers.md
