@@ -5,7 +5,7 @@ on:
   pull_request:
     branches: [ main, master ]
   schedule:
-    - cron: "0 11 * * *"
+    - cron: "59 7-18/2 * * *"  # every 2 hours from 7:00 to 18:59 daily
 
 jobs:
   test:
@@ -25,26 +25,26 @@ jobs:
       env:
         DOTENV_PRIVATE_KEY_CI: ${{ secrets.DOTENV_PRIVATE_KEY }}
     
-    # - name: Download previous artifact
-    #   uses: dawidd6/action-download-artifact@v6
-    #   with:
-    #     workflow: playwright.yml
-    #     name: housing_offers   # already unzipped
-    #     path: prev_artifact
+    - name: Download previous artifact
+      uses: dawidd6/action-download-artifact@v6
+      with:
+        workflow: playwright.yml
+        name: housing_offers   # already unzipped
+        path: prev_artifact
 
-    # - name: Compare artifacts
-    #   id: compare_md
-    #   run: |
-    #     if grep -q "75" "housing_offers.md"; then
-    #       echo "paris=true" >> $GITHUB_OUTPUT
-    #       echo "File contains Paris offers"
-    #     else
-    #       echo "paris=false" >> $GITHUB_OUTPUT
-    #       echo "No Paris offers"
-    #     fi
+    - name: Compare artifacts
+      id: compare_md
+      run: |
+        if cmp -s "housing_offers.md" "prev_artifact/housing_offers.md"; then
+          echo "different=false" >> $GITHUB_OUTPUT
+          echo "Files are the same"
+        else
+          echo "different=true" >> $GITHUB_OUTPUT
+          echo "Files are different"
+        fi
 
     - name: Send housing_offers.md via Email
-      if: ${{ !cancelled() }}
+      if: ${{ steps.compare_md.outputs.different == 'true' && !cancelled() }}
       uses: dawidd6/action-send-mail@v5
       with:
         server_address: smtp.gmail.com
@@ -52,11 +52,11 @@ jobs:
         secure: true
         username: ${{ secrets.GMAIL_FOR_MARKDOWN }}
         password: ${{ secrets.GMAIL_APP_PASSWORD }}
-        subject: "Daily PassLogement Offers"
+        subject: "Action Logement Appartments"
         body: "Please find the attached housing_offers.md file."
         from: GitHub Actions
         to: ${{ secrets.GMAIL_FOR_MARKDOWN }}
-        # html_body: file://housing_offers.md
+        html_body: file://housing_offers.md
         convert_markdown: true
 
     - name: Upload housing_offers.md artifact
