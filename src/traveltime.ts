@@ -1,7 +1,6 @@
-import dotenv from "dotenv";
 import { LocationRequest, TimeFilterRequestArrivalSearch, TimeFilterResponse, TravelTimeClient } from "traveltime-api";
 
-dotenv.config();
+require("@dotenvx/dotenvx").config();
 const apiKey = process.env.TRAVELTIME_API_KEY || "";
 const appId = process.env.TRAVELTIME_APP_ID || "";
 

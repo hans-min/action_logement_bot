@@ -1,16 +1,14 @@
 import { expect, Page, test } from "@playwright/test";
 import { assert } from "console";
-import dotenv from "dotenv";
 import { createMdfile } from "../src/generateMarkdown";
 import { HousingOffer } from "../src/HousingOffer";
 import { geocoding } from "../src/traveltime";
 
 // Load environment variables
-dotenv.config();
+require("@dotenvx/dotenvx").config();
 
 test("login to action logement", async ({ page }) => {
   test.setTimeout(120_000);
-  
   // Navigate to the login page using baseURL from config
   await page.goto("/");
   await page.getByRole("link", { name: "Cliquez ici pour aller à la page de connexion" }).click();
@@ -22,8 +20,8 @@ test("login to action logement", async ({ page }) => {
   await page.locator('input[name="closeable-item-radius-values"]').click();
   await page.getByText("0 km", { exact: true }).click();
   // Only long term rentals
-  await page.getByRole('textbox', { name: 'Type de location' }).click();
-  await page.getByRole('option', { name: 'Location classique' }).getByRole('checkbox').check();
+  await page.getByRole("textbox", { name: "Type de location" }).click();
+  await page.getByRole("option", { name: "Location classique" }).getByRole("checkbox").check();
 
   await page.getByRole("button", { name: "Cliquez ici pour lancer la" }).click();
   // Wait for results to done loading
@@ -32,12 +30,14 @@ test("login to action logement", async ({ page }) => {
   const rowsLocator = page.locator("fa-offer-search-result > div:nth-child(2) > div");
   // count all the children of rowsLocator
   const dataRows = await rowsLocator.count();
-  const totalOfferAmount = await page.locator("#total-offers-amount").textContent()
-    .then(text => parseInt(text?.split(" ")?.[0] ?? "0"));
+  const totalOfferAmount = await page
+    .locator("#total-offers-amount")
+    .textContent()
+    .then((text) => parseInt(text?.split(" ")?.[0] ?? "0"));
   assert(totalOfferAmount === dataRows, `Expected total offers ${totalOfferAmount} to match counted rows ${dataRows}`);
   expect(dataRows).toBe(totalOfferAmount);
   // TODO: if there are more than 20 rows, we need to paginate
-  
+
   let offers: HousingOffer[] = [];
   for (const annonce of await rowsLocator.all()) {
     console.log("Checking offer no", offers.length + 1, "out of", dataRows);
@@ -52,10 +52,9 @@ test("login to action logement", async ({ page }) => {
   const addresses = offers.map((offer) => offer.address);
   const commuteTime = await geocoding(addresses);
   offers = addCommuteTimeToOfferData(offers, commuteTime);
-  
+  console.log("Added commute times to offers.");
   logTableOffers(offers);
   createMdfile(offers);
-  
 });
 
 
