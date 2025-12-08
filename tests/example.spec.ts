@@ -1,5 +1,4 @@
 import { expect, Page, test } from "@playwright/test";
-import { assert } from "console";
 import { createMdfile } from "../src/generateMarkdown";
 import { HousingOffer } from "../src/HousingOffer";
 import { geocoding } from "../src/traveltime";
@@ -11,10 +10,10 @@ test("login to action logement", async ({ page }) => {
   test.setTimeout(120_000);
   // Navigate to the login page using baseURL from config
   await page.goto("/");
-  await page.getByRole("link", { name: "Cliquez ici pour aller à la page de connexion" }).click();
+  await page.getByRole("button", { name: "Se connecter" }).click();
   await loginToActionLogement(page);
   // Rechercher un logement
-  await page.getByRole("link", { name: "Aller à la page Rechercher un" }).click();
+  await page.getByLabel("Menu de navigation principale").getByRole("link", { name: "Rechercher un logement" }).click();
 
   // 0km from Paris
   await page.locator('input[name="closeable-item-radius-values"]').click();
@@ -23,24 +22,23 @@ test("login to action logement", async ({ page }) => {
   await page.getByRole("textbox", { name: "Type de location" }).click();
   await page.getByRole("option", { name: "Location classique" }).getByRole("checkbox").check();
 
-  await page.getByRole("button", { name: "Cliquez ici pour lancer la" }).click();
+  await page.getByRole("button", { name: "Lancer la recherche" }).click();
   // Wait for results to done loading
   await page.waitForSelector("div.loader", { state: "detached" });
+  const totalOfferAmountLoc = await page.locator("#total-offers-amount > p.offers-total").textContent();
+  console.log("Total offers found:", totalOfferAmountLoc);
+
+  const totalOfferAmount = parseInt(totalOfferAmountLoc?.trim().split(" ")?.[0] ?? "0");
+  console.log("Total offers found:", totalOfferAmount);
   // choose fa-offer-search-result 2nd child div
   const rowsLocator = page.locator("fa-offer-search-result > div:nth-child(2) > div");
   // count all the children of rowsLocator
-  const dataRows = await rowsLocator.count();
-  const totalOfferAmount = await page
-    .locator("#total-offers-amount")
-    .textContent()
-    .then((text) => parseInt(text?.split(" ")?.[0] ?? "0"));
-  assert(totalOfferAmount === dataRows, `Expected total offers ${totalOfferAmount} to match counted rows ${dataRows}`);
-  expect(dataRows).toBe(totalOfferAmount);
-  // TODO: if there are more than 20 rows, we need to paginate
+  await expect(rowsLocator).toHaveCount(totalOfferAmount);
 
+  // TODO: if there are more than 20 rows, we need to paginate
   let offers: HousingOffer[] = [];
   for (const annonce of await rowsLocator.all()) {
-    console.log("Checking offer no", offers.length + 1, "out of", dataRows);
+    console.log("Checking offer no", offers.length + 1, "out of", totalOfferAmount);
     await annonce.click();
     await page.waitForSelector("div.offer-infos");
     const offer = await getDataFromOffer(page);
@@ -56,7 +54,6 @@ test("login to action logement", async ({ page }) => {
   logTableOffers(offers);
   createMdfile(offers);
 });
-
 
 async function loginToActionLogement(page: Page) {
   // Get credentials from environment variables
@@ -77,32 +74,37 @@ async function loginToActionLogement(page: Page) {
 
 async function getDataFromOffer(page: Page): Promise<HousingOffer> {
   // get all the data
-  const [type_size, reference, addressText, locationText, priceText, description, featuresList, heatingDiagnostic] = 
-  await Promise.all([
-    page.locator("div.als-lodging-information").textContent(),
-    page.locator("p.reference").textContent(),
-    page.locator("p.address").textContent(),
-    page.locator("p.location").textContent(),
-    page.locator("fa-offer-apply p.price > span.amount").textContent(), // selects any descendant p.price inside fa-offer-apply
-    page.locator("fa-description").allTextContents()
-      .then(descs => descs.join("\n").trim()),
-    page.locator("ul.features-list > li > span.text").all(),
-    page.locator("fa-heating-diagnostic > div.dpe-item").all(),
-  ]);
+  const [type_size, reference, addressText, locationText, priceText, description, featuresList, heatingDiagnostic] =
+    await Promise.all([
+      page.locator("div.als-lodging-information").textContent(),
+      page.locator("p.reference").textContent(),
+      page.locator("p.address").textContent(),
+      page.locator("p.location").textContent(),
+      page.locator("fa-offer-apply p.price > span.amount").textContent(), // selects any descendant p.price inside fa-offer-apply
+      page
+        .locator("fa-description")
+        .allTextContents()
+        .then((descs) => descs.join("\n").trim()),
+      page.locator("ul.features-list > li > span.text").all(),
+      page.locator("fa-heating-diagnostic > div.dpe-item").all(),
+    ]);
   const address = `${addressText}, ${locationText}`;
   const size = parseFloat(type_size?.split("-")?.pop()?.trim() ?? "") ?? -1;
   const price = parseFloat(priceText?.split("€")?.[0].trim() ?? "") ?? -1;
-  const features = (await Promise.all(featuresList.map(async feature => await feature.textContent())))
+  const features = (await Promise.all(
+    featuresList.map(async (feature) => await feature.textContent())))
     .filter((feature) => feature != null);
-  
+
   // Find DPE and GES values
-  let dpe = 'N/A';
-  let ges = 'N/A';
+  let dpe = "N/A";
+  let ges = "N/A";
   for (const diagnostic of heatingDiagnostic) {
-    const label = await diagnostic.locator('p.dpe-label').textContent();
-    const value = await diagnostic.locator('span').textContent() ?? 'N/A';
-    if (value?.includes('Non')) {continue;}
-    if (label && label.includes('DPE')) {
+    const label = await diagnostic.locator("p.dpe-label").textContent();
+    const value = (await diagnostic.locator("span").textContent()) ?? "N/A";
+    if (value?.includes("Non")) {
+      continue;
+    }
+    if (label && label.includes("DPE")) {
       dpe = value;
     } else {
       ges = value;
@@ -112,14 +114,12 @@ async function getDataFromOffer(page: Page): Promise<HousingOffer> {
   return offer;
 }
 
-
 function addCommuteTimeToOfferData(
   houseOffers: HousingOffer[],
-  commuteTimes: { address: string; commuteTime: number }[]
+  commuteTimes: { address: string; commuteTime: number; }[]
 ) {
   return houseOffers.map((offer) => {
-    const commuteTime = commuteTimes.find(
-      (t) => t.address === offer.address)?.commuteTime || ">10m walk or >70";
+    const commuteTime = commuteTimes.find((t) => t.address === offer.address)?.commuteTime || ">10m walk or >70";
     offer.commuteTime = commuteTime;
     return offer;
   });
