@@ -85,7 +85,7 @@ async function getDataFromOffer(page: Page): Promise<HousingOffer> {
         .locator("fa-description")
         .allTextContents()
         .then((descs) => descs.join("\n").trim()),
-      page.locator("ul.features-list > li > span.text").all(),
+      page.locator("ul.features-list > li > p").all(),
       page.locator("fa-heating-diagnostic > div.dpe-item").all(),
     ]);
   const address = `${addressText}, ${locationText}`;
