@@ -47,10 +47,13 @@ test("login to action logement", async ({ page }) => {
     await page.waitForSelector("fa-offer-search-result");
   }
 
-  const addresses = offers.map((offer) => offer.address);
-  const commuteTime = await geocoding(addresses);
-  offers = addCommuteTimeToOfferData(offers, commuteTime);
-  console.log("Added commute times to offers.");
+  // check if only addresses is not empty
+  if (offers.length != 0) {
+    const addresses = offers.map((offer) => offer.address);
+    const commuteTime = await geocoding(addresses);
+    offers = addCommuteTimeToOfferData(offers, commuteTime);
+    console.log("Added commute times to offers.");
+  }
   logTableOffers(offers);
   createMdfile(offers);
 });
