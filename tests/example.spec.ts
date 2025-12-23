@@ -138,11 +138,11 @@ function logTableOffers(offers: HousingOffer[]) {
         Ascenseur: `${offer.haveEscalator !== null ? offer.haveEscalator : "N/A"}`,
         Chambres: `${offer.numberOfBedroom}`,
         Floor: `${offer.floor}`,
-        NewBuilding: `${offer.isNewBuilding}`,
-        Gardien: `${offer.gardienIncluded}`,
-        Heating: `${offer.heatingIncluded}`,
-        HotWater: `${offer.hotWaterIncluded}`,
-        ColdWater: `${offer.coldWaterIncluded}`,
+        // NewBuilding: `${offer.isNewBuilding}`,
+        // Gardien: `${offer.gardienIncluded}`,
+        // Heating: `${offer.heatingIncluded}`,
+        // HotWater: `${offer.hotWaterIncluded}`,
+        // ColdWater: `${offer.coldWaterIncluded}`,
         Features: `${offer.features}`,
       }))
   );
