@@ -2,13 +2,13 @@
 function extractAndRemoveFeature(
   features: string[],
   pattern: RegExp,
-  processMatch?: (match: RegExpMatchArray) => void
+  processMatch?: (string: string, match: RegExpMatchArray) => void
 ): boolean {
   const string = features.find((f) => pattern.test(f));
   if (string) {
     const match = string.match(pattern);
     if (match && processMatch) {
-      processMatch(match);
+      processMatch(string, match);
     }
     features.splice(features.indexOf(string), 1);
     return true;
@@ -37,13 +37,13 @@ export class HousingOffer {
     public isNewBuilding: boolean = false,
   ) {
     // Extract floor
-    extractAndRemoveFeature(this.features, /etage\s+(\d+)/i, (match) => {
+    extractAndRemoveFeature(this.features, /etage\s+(\d+)/i, (_, match) => {
       this.floor = parseInt(match[1], 10);
     });
 
     // Extract ascenseur
-    extractAndRemoveFeature(this.features, /ascenseur/i, (match) => {
-      this.haveEscalator = !/sans\s+ascenseur/i.test(match[0]);
+    extractAndRemoveFeature(this.features, /ascenseur/i, (string, _) => {
+      this.haveEscalator = !/sans\s+ascenseur/i.test(string);
     });
 
     // Extract gardien inclus
@@ -51,23 +51,23 @@ export class HousingOffer {
       this.gardienIncluded = true;
     });
     // Extract number of bedrooms
-    extractAndRemoveFeature(this.features, /(\d+)\s+chambres?/i, (match) => {
+    extractAndRemoveFeature(this.features, /(\d+)\s+chambres?/i, (_, match) => {
       this.numberOfBedroom = parseInt(match[1], 10);
     });
 
     // Extract Eau chaude comprise
-    extractAndRemoveFeature(this.features, /eau\s+chaude/i, (match) => {
-      this.hotWaterIncluded = !/eau\s+chaude\s+non\s+comprise?/i.test(match[0]);
+    extractAndRemoveFeature(this.features, /eau\s+chaude/i, (string, _) => {
+      this.hotWaterIncluded = !/eau\s+chaude\s+non\s+comprise?/i.test(string);
     });
 
     // Extract Eau froide comprise
-    extractAndRemoveFeature(this.features, /eau\s+froide/i, (match) => {
-      this.coldWaterIncluded = !/eau\s+froide\s+non\s+comprise?/i.test(match[0]);
+    extractAndRemoveFeature(this.features, /eau\s+froide/i, (string, _) => {
+      this.coldWaterIncluded = !/eau\s+froide\s+non\s+comprise?/i.test(string);
     });
 
     // Extract chauffage
-    extractAndRemoveFeature(this.features, /chauffage/i, (match) => {
-      this.heatingIncluded = !/chauffage.*non\s+compris/i.test(match[0]);
+    extractAndRemoveFeature(this.features, /chauffage/i, (string, _) => {
+      this.heatingIncluded = !/chauffage.*non\s+compris/i.test(string);
     });
     // Extract new building
     extractAndRemoveFeature(this.features, /neuf|Récent/i, () => {
