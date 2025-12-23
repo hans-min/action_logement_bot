@@ -96,19 +96,14 @@ async function getDataFromOffer(page: Page): Promise<HousingOffer> {
     .filter((feature) => feature != null);
 
   // Find DPE and GES values
-  let dpe = "N/A";
-  let ges = "N/A";
+  let dpe = "N/A", ges = "N/A";
   for (const diagnostic of heatingDiagnostic) {
+    const value: string | null = await diagnostic.locator("span").textContent({ timeout: 1000 })
+      .catch(() => null);
+    if (value == null) continue;
     const label = await diagnostic.locator("p.dpe-label").textContent();
-    const value = (await diagnostic.locator("span").textContent()) ?? "N/A";
-    if (value?.includes("Non")) {
-      continue;
-    }
-    if (label && label.includes("DPE")) {
-      dpe = value;
-    } else {
-      ges = value;
-    }
+    if (label?.includes("DPE")) dpe = value;
+    else if (label?.includes("GES")) ges = value;
   }
   const offer = new HousingOffer(reference, address, size, price, dpe, ges, description, features);
   return offer;
