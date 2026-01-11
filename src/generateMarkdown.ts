@@ -35,8 +35,12 @@ function createMapWaypointLink(offers: HousingOffer[], workplaceAddress = "EPEX 
     .slice(1)
     .map((address) => encodeURIComponent(address))
     .join("|");
+  console.log(waypoints);
   const googleMapsLink = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}` +
     `&travelmode=walking&waypoints=${waypoints}`;
 
-  return `\n## Google Maps Routes: [${addresses.length} places](${googleMapsLink})\n\n`;
+  const googleMapsMarkdownLink = `\n## Google Maps Routes: [${addresses.length} places](<${googleMapsLink}>)\n\n`;
+  console.log(googleMapsMarkdownLink);
+  return googleMapsMarkdownLink;
 }
+// waypoints=%20RUE%20D%20ALESIA%20%2C%20%20Paris%2014e%20Arrondissement%20(75014
