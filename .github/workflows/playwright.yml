@@ -27,6 +27,7 @@ jobs:
     
     - name: Download previous artifact
       uses: dawidd6/action-download-artifact@v6
+      continue-on-error: true
       with:
         workflow: playwright.yml
         name: housing_offers   # already unzipped
@@ -35,7 +36,10 @@ jobs:
     - name: Compare artifacts
       id: compare_md
       run: |
-        if cmp -s "housing_offers.md" "prev_artifact/housing_offers.md"; then
+        if [ ! -f "prev_artifact/housing_offers.md" ]; then
+          echo "Previous artifact not found, treating as different."
+          echo "different=true" >> $GITHUB_OUTPUT
+        elif cmp -s "housing_offers.md" "prev_artifact/housing_offers.md"; then
           echo "different=false" >> $GITHUB_OUTPUT
           echo "Files are the same"
         else
