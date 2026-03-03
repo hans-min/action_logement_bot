@@ -12,53 +12,56 @@ jobs:
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@main
-    - uses: actions/setup-node@main
-      with:
-        node-version: lts/*
-        cache: 'npm'
-    - run: npm ci
-    - run: npx playwright install --with-deps chromium
+    # - uses: actions/checkout@main
+    # - uses: actions/setup-node@main
+    #   with:
+    #     node-version: lts/*
+    #     cache: 'npm'
+    # - run: npm ci
+    # - run: npx playwright install --with-deps chromium
     
-    - name: Run Playwright tests
-      run: npx playwright test
-      env:
-        DOTENV_PRIVATE_KEY_CI: ${{ secrets.DOTENV_PRIVATE_KEY }}
+    # - name: Run Playwright tests
+    #   run: npx playwright test
+    #   env:
+    #     DOTENV_PRIVATE_KEY_CI: ${{ secrets.DOTENV_PRIVATE_KEY }}
     
-    - uses: actions/download-artifact@v8
+    - uses: dawidd6/action-download-artifact@v6
       continue-on-error: true
-
-    - name: Compare artifacts
-      id: compare_md
-      run: |
-        if [ ! -f "prev_artifact/housing_offers.md" ]; then
-          echo "Previous artifact not found, treating as different."
-          echo "different=true" >> $GITHUB_OUTPUT
-        elif cmp -s "housing_offers.md" "prev_artifact/housing_offers.md"; then
-          echo "different=false" >> $GITHUB_OUTPUT
-          echo "Files are the same"
-        else
-          echo "different=true" >> $GITHUB_OUTPUT
-          echo "Files are different"
-        fi
-
-    - name: Send housing_offers.md via Email
-      if: ${{ steps.compare_md.outputs.different == 'true' && !cancelled() }}
-      uses: dawidd6/action-send-mail@v5
       with:
-        server_address: smtp.gmail.com
-        server_port: 465
-        secure: true
-        username: ${{ secrets.GMAIL_FOR_MARKDOWN }}
-        password: ${{ secrets.GMAIL_APP_PASSWORD }}
-        subject: "Action Logement Appartments"
-        body: "Please find the attached housing_offers.md file."
-        from: GitHub Actions
-        to: ${{ secrets.GMAIL_FOR_MARKDOWN }}
-        html_body: file://housing_offers.md
-        convert_markdown: true
+        path: prev_artifact
+        skip_unpack: true
 
-    - uses: actions/upload-artifact@v7
-      with:
-        path: housing_offers.md
-        archive: false
+    # - name: Compare artifacts
+    #   id: compare_md
+    #   run: |
+    #     if [ ! -f "prev_artifact/housing_offers.md" ]; then
+    #       echo "Previous artifact not found, treating as different."
+    #       echo "different=true" >> $GITHUB_OUTPUT
+    #     elif cmp -s "housing_offers.md" "prev_artifact/housing_offers.md"; then
+    #       echo "different=false" >> $GITHUB_OUTPUT
+    #       echo "Files are the same"
+    #     else
+    #       echo "different=true" >> $GITHUB_OUTPUT
+    #       echo "Files are different"
+    #     fi
+
+    # - name: Send housing_offers.md via Email
+    #   if: ${{ steps.compare_md.outputs.different == 'true' && !cancelled() }}
+    #   uses: dawidd6/action-send-mail@v5
+    #   with:
+    #     server_address: smtp.gmail.com
+    #     server_port: 465
+    #     secure: true
+    #     username: ${{ secrets.GMAIL_FOR_MARKDOWN }}
+    #     password: ${{ secrets.GMAIL_APP_PASSWORD }}
+    #     subject: "Action Logement Appartments"
+    #     body: "Please find the attached housing_offers.md file."
+    #     from: GitHub Actions
+    #     to: ${{ secrets.GMAIL_FOR_MARKDOWN }}
+    #     html_body: file://housing_offers.md
+    #     convert_markdown: true
+
+    # - uses: actions/upload-artifact@v7
+    #   with:
+    #     path: housing_offers.md
+    #     archive: false
