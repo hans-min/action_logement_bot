@@ -29,17 +29,16 @@ jobs:
     - uses: dawidd6/action-download-artifact@master
       continue-on-error: true
       with:
-        name: housing_offers.md
-        path: prev_artifact
+        path: prev_artifact       # file name housing_offers.md.zip
         skip_unpack: true
 
     - name: Compare artifacts
       id: compare_md
       run: |
-        if [ ! -f "prev_artifact/housing_offers.md" ]; then
+        if [ ! -f "prev_artifact/housing_offers.md.zip" ]; then
           echo "Previous artifact not found, treating as different."
           echo "different=true" >> $GITHUB_OUTPUT
-        elif cmp -s "housing_offers.md" "prev_artifact/housing_offers.md"; then
+        elif cmp -s "housing_offers.md" "prev_artifact/housing_offers.md.zip"; then
           echo "different=false" >> $GITHUB_OUTPUT
           echo "Files are the same"
         else
