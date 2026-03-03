@@ -26,10 +26,9 @@ jobs:
         DOTENV_PRIVATE_KEY_CI: ${{ secrets.DOTENV_PRIVATE_KEY }}
     
     - name: Download previous artifact
-      uses: dawidd6/action-download-artifact@v6
+      uses: actions/download-artifact@v8.0.0
       continue-on-error: true
       with:
-        workflow: playwright.yml
         name: housing_offers   # already unzipped
         path: prev_artifact
 
@@ -64,7 +63,8 @@ jobs:
         convert_markdown: true
 
     - name: Upload housing_offers.md artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7.0.0
       with:
         name: housing_offers
         path: housing_offers.md
+        archive: false
