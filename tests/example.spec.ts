@@ -7,7 +7,7 @@ import { geocoding } from "../src/traveltime";
 require("@dotenvx/dotenvx").config();
 
 test("login to action logement", async ({ page }) => {
-  test.setTimeout(120_000);
+  test.setTimeout(60_000);
   // Navigate to the login page using baseURL from config
   await page.goto("/");
   await page.getByRole("button", { name: "Se connecter" }).click();
@@ -20,7 +20,7 @@ test("login to action logement", async ({ page }) => {
   await page.getByText("0 km", { exact: true }).click();
   // Only long term rentals
   await page.getByRole("textbox", { name: "Type de location" }).click();
-  await page.getByRole("option", { name: "Location classique" }).getByRole("checkbox").check();
+  await page.getByRole('listitem', { name: 'Location classique' }).click();
 
   await page.getByRole("button", { name: "Lancer la recherche" }).click();
   // Wait for results to done loading
