@@ -29,7 +29,9 @@ jobs:
     - uses: dawidd6/action-download-artifact@master
       continue-on-error: true
       with:
+        name: housing_offers.md
         path: prev_artifact
+        skip_unpack: true
 
     - name: Compare artifacts
       id: compare_md
@@ -64,4 +66,4 @@ jobs:
     - uses: actions/upload-artifact@v7
       with:
         path: housing_offers.md
-        archive: false
+        archive: false   
