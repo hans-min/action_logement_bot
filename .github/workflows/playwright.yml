@@ -28,9 +28,6 @@ jobs:
     - name: Download previous artifact
       uses: actions/download-artifact@v7.0.0
       continue-on-error: true
-      with:
-        name: housing_offers.md   # already unzipped
-        path: prev_artifact
 
     - name: Compare artifacts
       id: compare_md
