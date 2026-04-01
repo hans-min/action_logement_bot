@@ -1,3 +1,4 @@
+
 // Helper to extract and remove feature by regex, optionally process match
 function extractAndRemoveFeature(
   features: string[],
@@ -78,7 +79,7 @@ export class HousingOffer {
 
   toString(): string {
     return `{
-      Référence: ${this.reference}
+      Référence: ${this.reference} 
       Adresse: ${this.address}
       Size: ${this.size}m²
       Loyer (charges comprises): ${this.price}€

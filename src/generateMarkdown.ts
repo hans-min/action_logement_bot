@@ -17,9 +17,13 @@ function generateOffersTable(offers: HousingOffer[]): string {
   let rows = offers
     .map((offer) => {
       const addressLink = `[${offer.address}](https://www.google.com/maps?q=${encodeURIComponent(offer.address)})`;
+      const checkSize = offer.size >= 19 ? "✅" : "❌";
+      const checkPrice = offer.price < 1000 ? "✅" : "❌";
+      const checkEscalator = offer.haveEscalator ? "✅" : "❌";
+      const checkFloor = offer.floor > 1 ? "✅" : "❌";
       return (
-        `| ${addressLink} | ${offer.size} m² | ${offer.commuteTime}m | ${offer.price}€ |` + 
-        `${offer.haveEscalator} | ${offer.floor} |\n`
+        `| ${addressLink} | ${offer.size} m² ${checkSize} | ${offer.commuteTime}m | ${offer.price}€ ${checkPrice}|` +
+        `${checkEscalator} | ${offer.floor} ${checkFloor} |\n`
       );
     })
     .join("");
