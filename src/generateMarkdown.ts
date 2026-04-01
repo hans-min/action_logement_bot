@@ -23,7 +23,7 @@ function generateOffersTable(offers: HousingOffer[]): string {
       const checkFloor = offer.floor > 1 ? "✅" : "❌";
       return (
         `| ${addressLink} | ${offer.size} m² ${checkSize} | ${offer.commuteTime}m | ${offer.price}€ ${checkPrice}|` +
-        `${checkEscalator} | ${offer.floor} ${checkFloor} |\n`
+        `${offer.floor} ${checkFloor} | ${checkEscalator} | \n`
       );
     })
     .join("");
