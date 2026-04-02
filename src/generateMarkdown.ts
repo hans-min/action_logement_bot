@@ -12,7 +12,7 @@ export function createMdfile(offers: HousingOffer[]) {
 
 function generateOffersTable(offers: HousingOffer[]): string {
   // Create the Markdown table header
-  let header = `| Adresse | Size | Commute Time | Price | Escalator | Floor |\n`;
+  let header = `| Adresse | Size | Commute Time | Price | Floor | Escalator |\n`;
   header += `|---------|------|---------|-------|----------|----------|\n`;
   let rows = offers
     .map((offer) => {
