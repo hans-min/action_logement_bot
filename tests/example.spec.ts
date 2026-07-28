@@ -25,10 +25,16 @@ test("login to action logement", async ({ page }) => {
   await page.getByRole("button", { name: "Lancer la recherche" }).click();
   // Wait for results to done loading
   await page.waitForSelector("div.loader", { state: "detached" });
+  await page.waitForSelector("#no-offer-found, #total-offers-amount");
+  if (await page.locator("#no-offer-found").count() > 0) {
+    console.log("No offers found.");
+    return;
+  }
   const totalOfferAmountLoc = await page.locator("#total-offers-amount > p.offers-total").textContent();
   console.log("Total offers found:", totalOfferAmountLoc);
 
   const totalOfferAmount = parseInt(totalOfferAmountLoc?.trim().split(" ")?.[0] ?? "0");
+  expect(Number.isNaN(totalOfferAmount)).toBe(false);
   console.log("Total offers found:", totalOfferAmount);
   // choose fa-offer-search-result 2nd child div
   const rowsLocator = page.locator("fa-offer-search-result > div:nth-child(2) > div");
