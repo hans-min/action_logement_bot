@@ -66,6 +66,7 @@ jobs:
         convert_markdown: true
 
     - uses: actions/upload-artifact@v7
+      if: ${{ steps.compare_md.outputs.different == 'true' }}
       with:
         path: housing_offers.md
         archive: false   
