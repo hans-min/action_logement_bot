@@ -28,6 +28,7 @@ test("login to action logement", async ({ page }) => {
   await page.waitForSelector("#no-offer-found, #total-offers-amount");
   if (await page.locator("#no-offer-found").count() > 0) {
     console.log("No offers found.");
+    createMdfile([]);
     return;
   }
   const totalOfferAmountLoc = await page.locator("#total-offers-amount > p.offers-total").textContent();

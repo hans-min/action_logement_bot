@@ -2,9 +2,12 @@ import fs from "fs";
 import { HousingOffer } from "./HousingOffer";
 
 export function createMdfile(offers: HousingOffer[]) {
-  let markdownContent = `# [Action Logement Offers](https://logement-actionlogement.fr)\n`;
-  markdownContent += createMapWaypointLink(offers);
-  markdownContent += generateOffersTable(offers);
+  let markdownContent = "";
+  if (offers.length > 0) {
+    markdownContent = `# [Action Logement Offers](https://logement-actionlogement.fr)\n`;
+    markdownContent += createMapWaypointLink(offers);
+    markdownContent += generateOffersTable(offers);
+  }
   // Write the Markdown content to a file
   fs.writeFileSync("housing_offers.md", markdownContent, "utf-8");
   console.log('Markdown file "housing_offers.md" has been created.');
