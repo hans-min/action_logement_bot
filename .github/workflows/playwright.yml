@@ -37,7 +37,7 @@ jobs:
       run: |
         if [ ! -f "prev_artifact/housing_offers.md.zip" ]; then
           echo "Previous artifact not found, treating as different."
-          echo "different=true" >> $GITHUB_OUTPUT
+          echo "different=false" >> $GITHUB_OUTPUT
         elif [ ! -s "housing_offers.md" ]; then
           echo "Current artifact is empty, so no offers found. SKIP"
           echo "different=false" >> $GITHUB_OUTPUT
