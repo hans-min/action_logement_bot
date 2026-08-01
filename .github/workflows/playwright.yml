@@ -26,13 +26,14 @@ jobs:
       env:
         DOTENV_PRIVATE_KEY_CI: ${{ secrets.DOTENV_PRIVATE_KEY }}
 
-    - name: Upload Playwright failure screenshots
-      if: ${{ failure() }}
+    - name: Upload Playwright screenshots
+      if: ${{ always() }}
       uses: actions/upload-artifact@v4
       with:
-        name: playwright-failure-screenshots
+        name: playwright-screenshots
         path: |
           test-results/**/*.png
+          test-results/**/error-context.md
           playwright-report/**
         if-no-files-found: ignore
     
