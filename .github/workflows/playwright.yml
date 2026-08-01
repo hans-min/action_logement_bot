@@ -25,6 +25,16 @@ jobs:
       run: npx playwright test
       env:
         DOTENV_PRIVATE_KEY_CI: ${{ secrets.DOTENV_PRIVATE_KEY }}
+
+    - name: Upload Playwright failure screenshots
+      if: ${{ failure() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-failure-screenshots
+        path: |
+          test-results/**/*.png
+          playwright-report/**
+        if-no-files-found: ignore
     
     - uses: dawidd6/action-download-artifact@master
       continue-on-error: true

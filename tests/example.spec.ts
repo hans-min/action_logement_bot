@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import { expect, Page, test } from "@playwright/test";
 import { createMdfile } from "../src/generateMarkdown";
 import { HousingOffer } from "../src/HousingOffer";
