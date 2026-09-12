@@ -30,8 +30,9 @@ function generateOffersTable(offers: HousingOffer[]): string {
       const checkPrice = offer.price < 1000 ? "✅" : "❌";
       const checkEscalator = offer.haveEscalator ? "✅" : "❌";
       const checkFloor = offer.floor > 1 ? "✅" : "❌";
+      const checkLongTerm = offer.isLongTerm ? "✅" : "❌";
       return (
-        `| ${addressLink} | ${offer.isLongTerm} | ${offer.size} m² ${checkSize} | ${offer.commuteTime}m | ${offer.price}€ ${checkPrice}|` +
+        `| ${addressLink} | ${offer.isLongTerm} ${checkLongTerm} | ${offer.size} m² ${checkSize} | ${offer.commuteTime}m | ${offer.price}€ ${checkPrice}|` +
         `${offer.floor} ${checkFloor} | ${checkEscalator} | \n`
       );
     })
