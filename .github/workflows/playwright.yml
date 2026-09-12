@@ -71,7 +71,7 @@ jobs:
         password: ${{ secrets.GMAIL_APP_PASSWORD }}
         subject: "Action Logement Appartments"
         body: "Please find the attached housing_offers.md file."
-        from: GitHub Actions
+        from: 'GitHub Actions <${{ secrets.GMAIL_FOR_MARKDOWN }}>'
         to: ${{ secrets.GMAIL_FOR_MARKDOWN }}
         html_body: file://housing_offers.md
         convert_markdown: true
