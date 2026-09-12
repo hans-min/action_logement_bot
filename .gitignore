@@ -10,4 +10,5 @@ node_modules/
 .env.keys
 .env
 .vscode
+.agents
 housing_offers.md

@@ -15,8 +15,8 @@ export function createMdfile(offers: HousingOffer[]) {
 
 function generateOffersTable(offers: HousingOffer[]): string {
   // Create the Markdown table header
-  let header = `| Adresse | Size | Commute Time | Price | Floor | Escalator |\n`;
-  header += `|---------|------|---------|-------|----------|----------|\n`;
+  let header = `| Adresse | Long Term | Size | Commute Time | Price | Floor | Escalator |\n`;
+  header += `|---------|------|------|---------|-------|----------|----------|\n`;
   let rows = offers
     .map((offer) => {
       const addressLink = `[${offer.address}](https://www.google.com/maps?q=${encodeURIComponent(offer.address)})`;
@@ -25,7 +25,7 @@ function generateOffersTable(offers: HousingOffer[]): string {
       const checkEscalator = offer.haveEscalator ? "✅" : "❌";
       const checkFloor = offer.floor > 1 ? "✅" : "❌";
       return (
-        `| ${addressLink} | ${offer.size} m² ${checkSize} | ${offer.commuteTime}m | ${offer.price}€ ${checkPrice}|` +
+        `| ${addressLink} | ${offer.isLongTerm} | ${offer.size} m² ${checkSize} | ${offer.commuteTime}m | ${offer.price}€ ${checkPrice}|` +
         `${offer.floor} ${checkFloor} | ${checkEscalator} | \n`
       );
     })

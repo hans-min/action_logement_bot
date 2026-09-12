@@ -20,8 +20,8 @@ test("login to action logement", async ({ page }) => {
   await page.locator('input[name="closeable-item-radius-values"]').click();
   await page.getByText("0 km", { exact: true }).click();
   // Only long term rentals
-  await page.getByRole("textbox", { name: "Type de location" }).click();
-  await page.getByRole('listitem', { name: 'Location classique' }).click();
+  // await page.getByRole("textbox", { name: "Type de location" }).click();
+  // await page.getByRole('listitem', { name: 'Location classique' }).click();
 
   await page.getByRole("button", { name: "Lancer la recherche" }).click();
   // Wait for results to done loading
@@ -85,13 +85,15 @@ async function loginToActionLogement(page: Page) {
 
 async function getDataFromOffer(page: Page): Promise<HousingOffer> {
   // get all the data
-  const [type_size, reference, addressText, locationText, priceText, description, featuresList, heatingDiagnostic] =
+  const [type_size, reference, addressText, locationText, priceText, rentalLabel, description, featuresList, heatingDiagnostic] =
     await Promise.all([
       page.locator("div.als-lodging-information").textContent(),
       page.locator("p.reference").textContent(),
       page.locator("p.address").textContent(),
       page.locator("p.location").textContent(),
       page.locator("fa-offer-apply p.price > span.amount").textContent(), // selects any descendant p.price inside fa-offer-apply
+      page.locator('[data-test-id="candidacy-count-title"]').allTextContents()
+        .then((texts) => texts.join(" ").trim()),
       page
         .locator("fa-description")
         .allTextContents()
@@ -116,7 +118,9 @@ async function getDataFromOffer(page: Page): Promise<HousingOffer> {
     if (label?.includes("DPE")) dpe = value;
     else if (label?.includes("GES")) ges = value;
   }
-  const offer = new HousingOffer(reference, address, size, price, dpe, ges, description, features);
+  let isLongTerm = true;
+  if (rentalLabel.includes("Location courte durée")) isLongTerm = false;
+  const offer = new HousingOffer(reference, address, size, price, isLongTerm, dpe, ges, description, features);
   return offer;
 }
 
@@ -140,6 +144,7 @@ function logTableOffers(offers: HousingOffer[]) {
         Adresse: `${offer.address}`,
         Size: `${offer.size}m²`,
         Loyer: `${offer.price}€`,
+        LongTerm: offer.isLongTerm,
         CommuteTime: `${offer.commuteTime}m`,
         DPE: `${offer.dpe}`,
         GES: `${offer.ges}`,

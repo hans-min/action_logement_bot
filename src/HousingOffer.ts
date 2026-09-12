@@ -23,6 +23,7 @@ export class HousingOffer {
     public address: string,
     public size: number,
     public price: number,
+    public isLongTerm: boolean = true,
     public dpe: string,
     public ges: string,
     public description: string | null,
@@ -83,23 +84,11 @@ export class HousingOffer {
       Adresse: ${this.address}
       Size: ${this.size}m²
       Loyer (charges comprises): ${this.price}€
+      Long term: ${this.isLongTerm}
       DPE: ${this.dpe}
       GES: ${this.ges}
       Features: ${this.features}
       Description: ${this.description}
     }`;
   }
-} 
-
-// function checkAndRemoveFromFeatures(features: string[], pattern: RegExp, extraMatch?: RegExp): boolean {
-//   const etageFeature = features.find((f) => pattern.test(f));
-//   console.log("etageFeature:", etageFeature);
-//   if (etageFeature) {
-//     if (extraMatch && extraMatch.test(etageFeature)) {
-//       const match = etageFeature.match(extraMatch);
-//       if (match) {
-//         match = parseInt(match[1], 10);
-//         features.splice(features.indexOf(etageFeature), 1); // remove from features
-//       }
-//   }
-// }
+}
