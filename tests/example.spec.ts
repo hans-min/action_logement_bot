@@ -136,7 +136,7 @@ function addCommuteTimeToOfferData(
 }
 
 function logTableOffers(offers: HousingOffer[]) {
-  console.log("\nAll Action Logement Rentals (Paris, long term):");
+  console.log("\nAll Action Logement Rentals - Paris:");
   console.table(
     offers
       // .sort((a, b) => a.commuteTime - b.commuteTime)

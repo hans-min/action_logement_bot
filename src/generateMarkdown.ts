@@ -2,11 +2,17 @@ import fs from "fs";
 import { HousingOffer } from "./HousingOffer";
 
 export function createMdfile(offers: HousingOffer[]) {
+  // filter short term offer
+  const filteredOffers = offers.filter((offer) =>
+    offer.isLongTerm ||
+    (offer.size >= 18 && offer.floor >= 2 && (typeof offer.commuteTime !== "number" || offer.commuteTime < 30))
+  );
+
   let markdownContent = "";
-  if (offers.length > 0) {
+  if (filteredOffers.length > 0) {
     markdownContent = `# [Action Logement Offers](https://logement-actionlogement.fr)\n`;
-    markdownContent += createMapWaypointLink(offers);
-    markdownContent += generateOffersTable(offers);
+    markdownContent += createMapWaypointLink(filteredOffers);
+    markdownContent += generateOffersTable(filteredOffers);
   }
   // Write the Markdown content to a file
   fs.writeFileSync("housing_offers.md", markdownContent, "utf-8");

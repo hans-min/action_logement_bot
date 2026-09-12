@@ -28,7 +28,7 @@ jobs:
 
     - name: Upload Playwright screenshots
       if: ${{ always() }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@main
       with:
         name: playwright-screenshots
         path: |
@@ -62,7 +62,7 @@ jobs:
 
     - name: Send housing_offers.md via Email
       if: ${{ steps.compare_md.outputs.different == 'true' && !cancelled() }}
-      uses: dawidd6/action-send-mail@v5
+      uses: dawidd6/action-send-mail@master
       with:
         server_address: smtp.gmail.com
         server_port: 465
@@ -76,7 +76,7 @@ jobs:
         html_body: file://housing_offers.md
         convert_markdown: true
 
-    - uses: actions/upload-artifact@v7
+    - uses: actions/upload-artifact@main
       if: ${{ steps.compare_md.outputs.different == 'true' }}
       with:
         path: housing_offers.md
