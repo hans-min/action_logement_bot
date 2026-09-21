@@ -85,18 +85,16 @@ async function loginToActionLogement(page: Page) {
 
 async function getDataFromOffer(page: Page): Promise<HousingOffer> {
   // get all the data
-  const [type_size, reference, addressText, locationText, priceText, rentalLabel, description, featuresList, heatingDiagnostic] =
+  const [type_size, reference, addressText, locationText, priceText, isShortTerm, description, featuresList, heatingDiagnostic] =
     await Promise.all([
       page.locator("div.als-lodging-information").textContent(),
       page.locator("p.reference").textContent(),
       page.locator("p.address").textContent(),
       page.locator("p.location").textContent(),
       page.locator("fa-offer-apply p.price > span.amount").textContent(), // selects any descendant p.price inside fa-offer-apply
-      page.locator('[data-test-id="candidacy-count-title"]').allTextContents()
-        .then((texts) => texts.join(" ").trim()),
-      page
-        .locator("fa-description")
-        .allTextContents()
+      page.getByText("Location courte durée").filter({ visible: true }).count()
+        .then((count) => count > 0),
+      page.locator("fa-description").allTextContents()
         .then((descs) => descs.join("\n").trim()),
       page.locator("ul.features-list > li > p").all(),
       page.locator("fa-heating-diagnostic > div.dpe-item").all(),
@@ -118,8 +116,7 @@ async function getDataFromOffer(page: Page): Promise<HousingOffer> {
     if (label?.includes("DPE")) dpe = value;
     else if (label?.includes("GES")) ges = value;
   }
-  let isLongTerm = true;
-  if (rentalLabel.includes("Location courte durée")) isLongTerm = false;
+  const isLongTerm = !isShortTerm;
   const offer = new HousingOffer(reference, address, size, price, isLongTerm, dpe, ges, description, features);
   return offer;
 }
